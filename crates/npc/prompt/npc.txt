@@ -1,0 +1,5 @@
+{world}
+
+{place}
+
+Give a short single paragraph description of a human or other intelligent creature located at the described location. Include details like their name, age, sex and profession. Include a brief description of their appearance, clothing, and distinguishing features. Include a concise description of their goals, plans or motivations. Only provide a description of this individual, and not any story or narrative about them interacting with anyone.
