@@ -2,8 +2,7 @@
 name = "dmisino_simulacra"
 version = "0.1.0"
 edition = "2021"
+authors = ["Donnie Misino <donnie@misino.com>"]
 
 [workspace]
 members = ["crates/*"]
-
-[dependencies]
