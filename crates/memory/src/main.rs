@@ -4,7 +4,7 @@ use rusqlite::{Result};
 
 fn main() -> Result<()> {
 
-    // Insert some samepl data into each table
+    // Insert some sample data into each table
     let world_id = insert_into_world("World 1", "A world of magic and mystery.", "2023-04-21")?;
     let npc_id = insert_into_npc(world_id, "Bob", "A friendly local shopkeeper.", "2023-04-21")?;
     insert_into_memory(npc_id, 1, "Bob sold me a potion yesterday.", "2023-04-22")?;
