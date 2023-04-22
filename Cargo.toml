@@ -6,3 +6,6 @@ authors = ["Donnie Misino <donnie@misino.com>"]
 
 [workspace]
 members = ["crates/*"]
+
+[dependencies]
+lazy_static = "1.4.0"
