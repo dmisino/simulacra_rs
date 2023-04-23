@@ -1,17 +1,13 @@
 mod openai;
-use openai::{generate_completion};
-use std::env;
+use openai::{get_chat_completion};
 
 #[tokio::main]
 async fn main() {
-    let api_key = match env::var_os("OPENAI_API_KEY") {
-      Some(api_key) => api_key.into_string().unwrap(),
-      None => panic!("OPENAI_API_KEY is not set")
-    };  
-    let prompt = "How would you describe quantum mechanics to a computer programmer?";
-
-    match generate_completion(prompt, api_key).await {
-        Some(text) => println!("{}", text),
-        None => println!("Failed to generate completion"),
-    }
+  // Sample code, just sends each line entered to chat completions and prints response to console
+  loop{
+    let mut line = String::new();
+    std::io::stdin().read_line(&mut line).unwrap();
+    let response = get_chat_completion(line).await;
+    println!("{}", response);
+  }
 }
