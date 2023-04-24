@@ -51,7 +51,7 @@ pub async fn get_chat_completion(prompt: String) -> String {
       "messages": [
         {
           "role": "system",
-          "content": "You are a helpful assistant."
+          "content": "You are an award winning writer who is helping as an assistant to write a new adventure story."
         },
         {
           "role": "user",
@@ -60,7 +60,7 @@ pub async fn get_chat_completion(prompt: String) -> String {
       ]
     }"#.to_string();
   data = format!("{}", data.replace("{}", prompt.trim_end()));
-  
+
   let url = "https://api.openai.com/v1/chat/completions".to_string();
   let auth = format!("Bearer {}", api_key);
 
@@ -71,17 +71,18 @@ pub async fn get_chat_completion(prompt: String) -> String {
       .header(AUTHORIZATION, auth)
       .body(data).send().await.unwrap();
 
-  let chat_response = match response.status() {
+    let chat_response = match response.status() {
       reqwest::StatusCode::OK => {
         match response.json::<Root>().await {
             Ok(parsed) => parsed.choices[0].message.content.to_owned(),
             Err(_) => "Error: unable to parse JSON response".to_owned(),
-            }
+        }
       },
-      reqwest::StatusCode::UNAUTHORIZED => "Error: Status UNAUTHORIZED".to_owned(),
+      reqwest::StatusCode::UNAUTHORIZED => "Error: Status 401 - Unauthorized".to_owned(),
       reqwest::StatusCode::TOO_MANY_REQUESTS => "Error: Status 429 - Too many requests".to_owned(),
-      _ => "Error: Unexpected HTTP status code from OpenAI API".to_owned(),
-    };
-    chat_response
+      reqwest::StatusCode::BAD_REQUEST => "Error: Status 400 - Bad request".to_owned(),
+      status => format!("Error: Unexpected HTTP status code from OpenAI API: {}", status.as_u16()),
+  };
+  chat_response
 }
 

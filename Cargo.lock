@@ -533,10 +533,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "npc"
-version = "0.1.0"
-
-[[package]]
 name = "num_cpus"
 version = "1.15.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -651,6 +647,10 @@ checksum = "2b63bdb0cd06f1f4dedf69b254734f9b45af66e4a031e42a7480257d9898b435"
 dependencies = [
  "unicode-ident",
 ]
+
+[[package]]
+name = "prompt"
+version = "0.1.0"
 
 [[package]]
 name = "quote"
@@ -857,7 +857,10 @@ name = "simulacra"
 version = "0.1.0"
 dependencies = [
  "async-trait",
+ "llm",
  "log",
+ "memory",
+ "prompt",
  "reqwest",
  "serde",
  "serde_json",
@@ -871,6 +874,7 @@ name = "simulacra_cli"
 version = "0.1.0"
 dependencies = [
  "async-trait",
+ "llm",
  "log",
  "reqwest",
  "serde",

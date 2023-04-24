@@ -1,3 +1,0 @@
-{world}
-
-Give a short description of no more than 3 sentences of a smaller locale within this world, where an intelligent being could exist. Do not describe the being. Only describe the locale, its inhabitants and environmental details.

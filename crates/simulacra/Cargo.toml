@@ -12,3 +12,6 @@ url = { version = "2.3.1", features = ["serde"] }
 serde_urlencoded = "0.7.1"
 async-trait = "0.1.66"
 log = "0.4.17"
+llm = { path = "../llm" }
+prompt = { path = "../prompt" }
+memory = { path = "../memory" }

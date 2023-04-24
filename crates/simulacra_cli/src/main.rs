@@ -1,20 +1,33 @@
-use simulacra::{
-  SimulacraError
-};
-//use std::fs::File;
-use std::io::{Write};
+use simulacra::*;
 
 #[tokio::main]
-async fn main() -> Result<(), SimulacraError> {
-  //let mut user_input = None;
-  loop {
-    // Get user input
-    let mut input = String::new();
-    std::io::stdout().flush().unwrap();
-    std::io::stdin().read_line(&mut input).unwrap();
-    //user_input = Some(input.trim().to_string());
+async fn main() {
 
-    println!("{}", input.trim().to_owned());
+  println!("Welcome to Simulacra. Type 'new' to generate a new world and simulation. Enter 'exit' to quit");
+  loop{
+    let mut line = String::new();
+    std::io::stdin().read_line(&mut line).unwrap();
+    match line.trim(){
+      "npc" => {
+        let npc = get_new_world_place_npc().await;
+        story_message(&npc);
+      },
+      "place" => {
+        let world = get_new_world().await;
+        let place = get_new_place(world).await;
+        story_message(&place);
+      },      
+      "world" => {
+        let world = get_new_world().await;
+        story_message(&world);
+      },
+      "exit" => {
+        status_message("Exiting");
+        break;
+      },
+      _ => {
+        status_message("Invalid command");
+      }
+    }
   }
-  Ok(())
 }
