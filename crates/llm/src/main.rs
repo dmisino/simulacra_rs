@@ -3,7 +3,8 @@ use openai::{get_chat_completion};
 
 #[tokio::main]
 async fn main() {
-  // Sample code, just sends each line entered to chat completions and prints response to console
+  // Sample code, sends each line entered into console 
+  // to chat completions and print response
   loop{
     let mut line = String::new();
     std::io::stdin().read_line(&mut line).unwrap();
