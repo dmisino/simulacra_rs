@@ -1,9 +1,9 @@
 # simulacra
-simulacra is a simulation engine for creating intelligent, interactive agents inside of evolving narrative worlds using large language models. 
+simulacra is a simulation engine and testbed for creating intelligent, interactive agents inside evolving narrative worlds using large language models.
 
-Large Language models (LLMs) act as stateless computation engines, where their world view is generated instantly each time it is called, based on training data and the context that is provided to it. Language models can be trained with new or domain specific data. But beyond this, with no memory of their own, the key to harnessing natural language processing for creating systems that provide immersive, ongoing experiences is in building the supporting frameworks that provide the needed context and instruction. Prompts are structured to provide everything the language model requires to understand and successfully synthesise an appropriate output, giving the illusion of intelligence and continuity of thought. 
+Large Language models (LLMs) act as stateless computation engines, where their world view is generated instantly with each prompt, based on training data and the context that is provided to it. Language models can be trained with new or domain specific data, allowing them to respond in a useful way to specific types of questions. But beyond this, with no memory of their own, the key to harnessing natural language processing for creating systems that provide immersive, continuous experiences is in building supporting frameworks that provide context and instruction. Prompts are structured to provide everything the language model requires to rebuild a world view so it can generate output that appears intelligent and believable.
 
-This project attempts to use LLM technology to create agents that model realistic behavior, that a user can interact with, and whose world and story will continue to evolve over time. The main purpose of this effort is to experiment with, and demonstrate, what is currently possible using language models for creating believable, interactive characters and emergent story lines.
+This project attempts to use LLM technology to create agents that model realistic behavior, that a user can interact with, and whose world and story will continue to evolve over time. The main purpose of this effort is to experiment with, and demonstrate, what is currently possible using language models for creating believable, interactive characters and dynamic story lines.
 
 Note: This project is in development. Everything described here is subject to change.
 
@@ -53,31 +53,31 @@ TBD
 
 ### Saving memories
 
-Agents perform whatever actions or interactions are a part of their programming. In this particular project, this is whatever results from language model prompted asking what the agent would do next, given background context about the character, its world and its current surroundings. Given some interaction or event, the text describing this event is fed to a languge model which is tasked with extracting a concise list of memories from the overall text. These are de-duped and saved as individual time-stamped memories.
+Agents perform actions or have interactions as part of their function. In this particular project, these actions arise from a language model being prompted to generate the agents next action, given a characters background, memories, thoughts, their world and their current surroundings. The text describing each event is again fed to a languge model, which is tasked with extracting a concise list of memories. These are then saved as individual time-stamped memories.
 
 ### Retrieving memories
 
-When prompting a language model for an agent action at each time interval, the memories most relevant to the current situation need to be included in the prompt. Surfacing relevant memories is a challenge, and one of the more important areas of research in developing agents based on language models. One method invloves ranking memories based on:
+When prompting a language model for an agent action at each time interval, the memories most relevant to the current situation need to be included. Surfacing the most relevant memories is a challenge, and one of the more important areas of research in developing agents based on language models. One method invloves ranking memories based on:
   
   1. Recency - An exponential decay function is used to reduce the relevance of older memories.
   2. Relevance - A language model prompt describes the current situation, and asks for a ranking from 1 to 10 of how relevant each memory is to the current situation. 
   3. Importance - This refers to how important the memory is to the individual agent. A language model prompt describes the agent, its purpose, personality, memories and so on as is available, and then asks for a ranking from 1 to 10 of how important each memory is likely to be to that individual.
 
-The results of these three rankings are combined to produce a final ranking for each memory. The top memories that fit within the prompt context are then passed to the language model to be included in the  prompt to generate an agent action or response.
+The results of these three rankings are combined to produce a final ranking score for each memory. The top memories that fit within the prompt context are then passed to the language model to be factored into deciding how an agent will react.
 
 ### Reflections
 
-Reflections are new thoughts formed from existing memories. On occasion the system will pull available memories, and send them to a language model with instructions to "reflect" on those memories and draw new thoughts or conclusions, which are then saved as new agent memories. This allows for more organic and natural behavior from agents.
+Reflections are new thoughts formed from existing memories. On occasion the system will pull available memories, and send them to a language model with instructions to "reflect" on those memories and draw conclusions or form new thoughts. These are then saved as new agent memories. This allows for more organic and natural behavior from agents.
 
 ### World and environment
 
-A basic overview of the world and its major events (world memories) are added to each agent prompt. At random intervals, new world events may be added which agents will become aware of, and factor into their actions. World memories may also be added manually by the user.
+A basic overview of the world and its major events (world memories) are added to each agent action or conversational prompt. World memories may also be added manually by the user.
 
-A description of the local area, and an environment tree are also added to each agent prompt, giving the agent the opportunity to interact with their environment, or make decisions based on environmental factors.
+A description of the local area, and an environment tree are also added to each agent prompt, giving the agent the opportunity to react to, or interact with, their environment.
 
 ### Events
 
-On occasion, random events may be created, getting injected into world, location or agent memories as appropriate. These will be incorporated into the agents emergent story, actions and dialog. 
+On occasion, random events may be created, getting injected into world, location or agent memories as appropriate. These will be incorporated into the agents memory stream, impacting their emerging story, actions and dialog. 
 
 ### Letting the simulation run
 
