@@ -7,7 +7,7 @@ pub fn get_prompt(type_arg: &str) -> String {
   file_path.push("template");
   file_path.push(format!("{}.txt", type_arg));
   match fs::read_to_string(file_path) {
-    Ok(contents) => contents,
+    Ok(contents) => contents.replace("\r\n", "\\n"),
     Err(_) => "".to_string(),
   }
 }

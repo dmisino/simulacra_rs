@@ -5,19 +5,9 @@ use llm::openai::*;
 pub fn pause() {
   std::thread::sleep(std::time::Duration::from_millis(1000));
 }
-
-pub fn status_message(content: &str) {
-  println!("STATUS: {}", content);
-}
-
-pub fn story_message(content: &str) {
-  println!("STORY: {}", content);
-}
-
-pub async fn get_new_world_place_npc() -> String {
+pub async fn get_new_world_place_npc() -> (String, String, String) {
   let prompt = get_prompt("world");
   let world: String = if !prompt.is_empty() {
-      status_message("Generating world");
       get_chat_completion(prompt).await
   } else {
       "Error loading prompt from file".to_string()
@@ -25,7 +15,6 @@ pub async fn get_new_world_place_npc() -> String {
   pause();
   let prompt = get_prompt("place");
   let place: String = if !prompt.is_empty() {
-      status_message("Generating place");
       get_chat_completion(prompt.replace("{world}", &world)).await
   } else {
       "Error loading prompt from file".to_string()
@@ -33,14 +22,12 @@ pub async fn get_new_world_place_npc() -> String {
   pause();
   let prompt = get_prompt("npc");
   let npc: String = if !prompt.is_empty() {
-      status_message("Generating npc");    
       get_chat_completion(prompt.replace("{world_place}", &format!("{}\\n\\n{}", &world, &place))).await
   } else {
       "Error loading prompt from file".to_string()
   };
   pause();
-  let world_place_npc = format!("\\n{}\\n\\n{}\\n\\n{}", &world, &place, &npc).replace("\\n", "\n");
-  world_place_npc
+  (world, place, npc)
 }
 
 pub async fn get_new_world() -> String {
