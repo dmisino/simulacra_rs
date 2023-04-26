@@ -1,26 +1,23 @@
 use std::sync::mpsc::{Sender, Receiver};
+use std::sync::mpsc;
 use std::thread;
 use std::time::Duration;
-
-pub enum AgentMessage {
-    Message(String),
-}
 pub struct NpcAgent {
     id: u32,
     name: String,
     summary: String,
     description: String,
     current_state: u32,
-    interval: Duration,
+    interval: Duration, 
 }
 
 impl NpcAgent {
 
     pub fn new(id: u32, name: String, summary: String, description: String, current_state: u32, interval: Duration) -> Self {
-        NpcAgent { id, name, summary, description, current_state, interval }
+        NpcAgent { id, name, summary, description, current_state, interval}
     }
 
-    pub fn start(&mut self, sender: Sender<AgentMessage>, receiver: Receiver<AgentMessage>) {
+    pub fn start(&mut self) -> (Sender<String>, Receiver<String>) {
         let mut agent = NpcAgent {
             id: self.id,
             name: self.name.clone(),
@@ -34,12 +31,16 @@ impl NpcAgent {
         let name = self.name.clone();
         agent.current_state = 1;
 
+        // Create communication channels
+        let (caller_to_agent_sender, caller_to_agent_receiver) = mpsc::channel::<String>();
+        let (agent_to_caller_sender, agent_to_caller_receiver) = mpsc::channel::<String>();
+    
         thread::spawn(move || {
 
             loop {
-                match receiver.try_recv() {
-                    Ok(AgentMessage::Message(message)) => {
-                        println!("{} received message: {}", agent.name, message);
+                match caller_to_agent_receiver.try_recv() {
+                    Ok(message) => {
+                        println!("{} (id {}) received message: {}", agent.name, agent.id, message);
                         let parts: Vec<&str> = message.split(':').collect();
                         let command = parts[0];
                         let value = parts[1];                        
@@ -55,19 +56,19 @@ impl NpcAgent {
                 match agent.current_state {
                     0 => {
                         let message = format!("{} (id {}) is stopped", name, id);
-                        sender.send(AgentMessage::Message(message)).unwrap();
+                        agent_to_caller_sender.send(message).unwrap();
                     },
                     1 => {
                         let message = format!("{} (id {}) is running", name, id);
-                        sender.send(AgentMessage::Message(message)).unwrap();
+                        agent_to_caller_sender.send(message).unwrap();
                     },
                     2 => {
                         let message = format!("{} (id {}) is in interactive mode", name, id);
-                        sender.send(AgentMessage::Message(message)).unwrap();
+                        agent_to_caller_sender.send(message).unwrap();
                     },
                     3 => {
                         let message = format!("{} (id {}) is exiting", name, id);
-                        sender.send(AgentMessage::Message(message)).unwrap();
+                        agent_to_caller_sender.send(message).unwrap();
                         break;
                     },
                     _ => break,
@@ -76,6 +77,7 @@ impl NpcAgent {
             }
             drop(agent);
         });
+        (caller_to_agent_sender, agent_to_caller_receiver)
     }
 
     pub fn set_state(&mut self, state: u32) {
