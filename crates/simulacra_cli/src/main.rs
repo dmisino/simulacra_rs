@@ -12,7 +12,7 @@ fn main() {
       1,
       "Bob".to_string(),
       "Bob is an AI created from the consciousness of a dead guy who was named Bob".to_string(),
-      "Bob was a computer programmer whose consciousness was uploaded to a computer just before he was killed in a car accident. He then awoke as an AI 80 years later.".to_string(),
+      "Bob is a software engineer and entrepreneur who signs up for cryogenic freezing in the hopes of being revived in the future. However, he wakes up 117 years later to find that his body has been destroyed and his consciousness has been uploaded into a computer system.".to_string(),
       1,
       Duration::from_secs(5),
     );   
@@ -41,15 +41,9 @@ fn main() {
                 Err(_) => {},
             }
         }
-        // Test sending message to agent 1 **********************
-        if n == 10 {
-          // Send a message to the agent to modify its state;
-          agent1_sender.clone().send("set_state:0".to_string()).unwrap();
-        }
-        if n == 20 {
-          // Send a message to the agent to modify its state;
-          agent1_sender.clone().send("set_state:1".to_string()).unwrap();
-        }
+        // Test sending messages to agent 1 **********************
+        if n == 10 { agent1_sender.clone().send("set_state:0".to_string()).unwrap(); }
+        if n == 20 { agent1_sender.clone().send("set_state:1".to_string()).unwrap(); }
 
         thread::sleep(Duration::from_secs(1));
     }
