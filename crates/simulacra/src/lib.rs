@@ -1,3 +1,5 @@
+pub mod agent;
+
 use prompt::*;
 use llm::openai::*;
 

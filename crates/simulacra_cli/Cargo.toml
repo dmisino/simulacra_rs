@@ -16,4 +16,5 @@ log = "0.4.17"
 simulacra = { path = "../simulacra" }
 llm = { path = "../llm" }
 crossterm = "0.26.1"
+mpsc = "0.1.0"
 

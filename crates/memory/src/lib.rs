@@ -1,3 +1,16 @@
+//pub mod datastore;
+//use datastore::datastore::*;
+
+// pub fn get_relevant_memories_for_npc(npc_id: u32, situation: String) -> Vec<Memory> {
+//   let memories = get_memories_by_npc_id(npc_id, new u32(100).unwrap();
+  
+  
+  
+  
+//   memories
+// }
+
+
 // pub mod datastore;
 // pub mod cognition;
 

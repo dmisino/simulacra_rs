@@ -90,7 +90,7 @@ pub mod datastore {
     pub fn insert_into_place(world_id: i32, name: &str, summary: &str, detail: &str, date: &str) -> Result<i32> {
       let conn = get_db_conn()?;
       conn.execute(
-          "INSERT INTO world (world_id, name, summary, detail, date) VALUES (?1, ?2, ?3, ?4, ?5)",
+          "INSERT INTO place (world_id, name, summary, detail, date) VALUES (?1, ?2, ?3, ?4)",
           &[world_id, name, summary, detail, date],
       )?;
 
@@ -99,7 +99,7 @@ pub mod datastore {
       Ok(id)
     }
 
-    pub fn insert_into_npc(world_id: i32, name: &str, description: &str, date: &str) -> Result<i32> {
+    pub fn insert_into_npc(world_id: i32, name: &str, summary: &str, detail: &str, date: &str) -> Result<i32> {
         let conn = get_db_conn()?;
         let query = format!("INSERT INTO npc (world_id, name, summary, detail, date) VALUES ({}, '{}', '{}', {}, {})", world_id, name, summary, detail, date);
         conn.execute(

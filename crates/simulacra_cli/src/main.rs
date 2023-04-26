@@ -1,111 +1,43 @@
-use simulacra::*;
-use std::io::{self, Write};
+use std::sync::mpsc;
+use std::time::Duration;
+use simulacra::agent::{ NpcAgent, AgentMessage };
+use std::thread;
 
-fn print_console(message: &str) {
-  println!("{}\n", message);
-  io::stdout().flush().unwrap();
-}
+fn main() {
+    // Create a channel for sending and receiving messages
+    let (caller_to_agent_sender, caller_to_agent_receiver) = mpsc::channel::<AgentMessage>();
+    let (agent_to_caller_sender, agent_to_caller_receiver) = mpsc::channel::<AgentMessage>();
 
-fn set_status_message(status_text: &str) {
-  print!("{}{}\n", "STATUS: ", status_text);
-  io::stdout().flush().unwrap();
-}
+    // Instantiate a new NPC agent
+    let mut agent = NpcAgent::new(
+        1,
+        "Bob".to_string(),
+        "Bob is an AI created from the consciousness of a dead guy who was named Bob".to_string(),
+        "Bob was a computer programmer whose consciousness was uploaded to a computer just before he was killed in a car accident. He then awoke as an AI 80 years later.".to_string(),
+        1,
+        Duration::from_secs(5),
+    );
 
-fn get_user_input(message: &str) -> String {
-  let mut line = String::new();
-  print!("{}", message);
-  io::stdout().flush().unwrap();
-  std::io::stdin().read_line(&mut line).unwrap();
-  line
-}
+    // Start the agent in a separate thread
+    agent.start(agent_to_caller_sender.clone(), caller_to_agent_receiver);
 
-#[tokio::main]
-async fn main() {
-  let mut line = String::new();
-  let mut world = String::new();
-  let mut place = String::new();
-  let mut npc = String::new();
-
-  println!("Welcome to Simulacra. Type 'new' to generate a new world and simulation. Enter 'exit' to quit");
-  loop{
-    let line = get_user_input("Command: ");
-    match line.trim() {
-      "help" => {
-        set_status_message("Help");
-        print_console("Commands:");
-        print_console("new - Generate a new world, place and npc");
-        print_console("exit - Exit the program");
-      },
-      "new" => {
-        match npc.is_empty() {
-          true => {
-            set_status_message("Generating new world, place and npc");
-            (world, place, npc) = get_new_world_place_npc().await;
-            set_status_message("World, place and npc generated. Use 'world', 'place', or 'npc'commands to view details.");
-          },
-          false => {
-            print_console("A world, place and npc have already been generated. Use 'clear' command to discard before generating a new simulation.");
-          }
+    // Receive and print messages from agents
+    let mut n: u32 = 0;
+    loop {
+        n = n + 1;
+        match agent_to_caller_receiver.try_recv() {
+            Ok(AgentMessage::Message(message)) => println!("Received message from agent: {}", message),
+            Err(_) => {},
         }
-      },
-      "new-world" => {
-        match world.is_empty() {
-          true => {
-            set_status_message("Generating new world.");
-            world = get_new_world().await;
-            set_status_message("World generated. Use 'world' to view details.");
-          },
-          false => {
-            print_console("A world has already been generated. Use 'clear' command to discard before generating a new simulation.");
-          }
+        if n == 10 {
+          // Send a message to the agent to modify its state;
+          caller_to_agent_sender.clone().send(AgentMessage::Message("set_state:0".to_string())).unwrap();
         }
-      },      
-      "clear" => {
-        set_status_message("Clearing world, place and npc");
-        world = String::new();
-        place = String::new();
-        npc = String::new();
-      },
-      "world" => {
-        match world.is_empty() {
-          true => {
-            print_console("No world generated. Use 'new' command to generate a new world, place and npc.");
-          },
-          false => {
-            let msg = format!("WORLD: \n{}\n", &world);
-            print_console(&msg);
-          }
+        if n == 20 {
+          // Send a message to the agent to modify its state;
+          caller_to_agent_sender.clone().send(AgentMessage::Message("set_state:1".to_string())).unwrap();
         }
-      },
-      "place" => {
-        match place.is_empty() {
-          true => {
-            print_console("No place generated. Use 'new' command to generate a new world, place and npc.");
-          },
-          false => {
-            let msg = format!("PLACE: \n{}\n", &place);
-            print_console(&msg);
-          }
-        }
-      },
-      "npc" => {
-        match npc.is_empty() {
-          true => {
-            print_console("No npc generated. Use 'new' command to generate a new world, place and npc.");
-          },
-          false => {
-            let msg = format!("NPC: \n{}\n", &npc);
-            print_console(&msg);
-          }
-        }
-      },
-      "exit" => {
-        set_status_message("Exiting");
-        break;
-      },
-      _ => {
-        set_status_message("Invalid command");
-      }
+        thread::sleep(Duration::from_secs(1));
     }
-  }
+
 }
