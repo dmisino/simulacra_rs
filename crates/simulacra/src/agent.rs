@@ -17,6 +17,7 @@ impl NpcAgent {
         NpcAgent { id, name, summary, description, current_state, interval}
     }
 
+    // Starting an agent creates a new thread and returns a channel to communicate with it
     pub fn start(&mut self) -> (Sender<String>, Receiver<String>) {
         let mut agent = NpcAgent {
             id: self.id,

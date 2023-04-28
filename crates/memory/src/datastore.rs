@@ -10,7 +10,7 @@ pub mod datastore {
                     id              INTEGER PRIMARY KEY AUTOINCREMENT,
                     name            TEXT NOT NULL,
                     summary         TEXT NOT NULL,
-                    detail          TEXT NOT NULL,
+                    description     TEXT NOT NULL,
                     date            TEXT NOT NULL
                     )",
             [],
@@ -22,7 +22,7 @@ pub mod datastore {
                   world_id        INTEGER NOT NULL REFERENCES world (id),
                   name            TEXT NOT NULL,
                   summary         TEXT NOT NULL,
-                  detail          TEXT NOT NULL,
+                  description     TEXT NOT NULL,
                   date            TEXT NOT NULL
                   )",
           [],
@@ -34,7 +34,7 @@ pub mod datastore {
                     world_id        INTEGER NOT NULL REFERENCES world (id),
                     name            TEXT NOT NULL,
                     summary         TEXT NOT NULL,
-                    detail          TEXT NOT NULL,
+                    description     TEXT NOT NULL,
                     date            TEXT NOT NULL
                     )",
             [],
@@ -75,11 +75,11 @@ pub mod datastore {
         Ok(conn)
     }
 
-    pub fn insert_into_world(name: &str, summary: &str, detail: &str, date: &str) -> Result<i32> {
+    pub fn save_world(name: &str, summary: &str, description: &str, date: &str) -> Result<i32> {
         let conn = get_db_conn()?;
         conn.execute(
-            "INSERT INTO world (name, summary, detail, date) VALUES (?1, ?2, ?3, ?4)",
-            &[name, summary, detail, date],
+            "INSERT INTO world (name, summary, description, date) VALUES (?1, ?2, ?3, ?4)",
+            &[name, summary, description, date],
         )?;
 
         let id = conn.last_insert_rowid() as i32;
@@ -87,11 +87,11 @@ pub mod datastore {
         Ok(id)
     }
 
-    pub fn insert_into_place(world_id: i32, name: &str, summary: &str, detail: &str, date: &str) -> Result<i32> {
+    pub fn save_place(world_id: i32, name: &str, summary: &str, description: &str, date: &str) -> Result<i32> {
       let conn = get_db_conn()?;
       conn.execute(
-          "INSERT INTO place (world_id, name, summary, detail, date) VALUES (?1, ?2, ?3, ?4)",
-          &[world_id, name, summary, detail, date],
+          "INSERT INTO place (world_id, name, summary, description, date) VALUES (?1, ?2, ?3, ?4)",
+          &[world_id, name, summary, description, date],
       )?;
 
       let id = conn.last_insert_rowid() as i32;
@@ -99,9 +99,9 @@ pub mod datastore {
       Ok(id)
     }
 
-    pub fn insert_into_npc(world_id: i32, name: &str, summary: &str, detail: &str, date: &str) -> Result<i32> {
+    pub fn save_npc(world_id: i32, name: &str, summary: &str, description: &str, date: &str) -> Result<i32> {
         let conn = get_db_conn()?;
-        let query = format!("INSERT INTO npc (world_id, name, summary, detail, date) VALUES ({}, '{}', '{}', {}, {})", world_id, name, summary, detail, date);
+        let query = format!("INSERT INTO npc (world_id, name, summary, description, date) VALUES ({}, '{}', '{}', {}, {})", world_id, name, summary, description, date);
         conn.execute(
             &query,
             []
@@ -112,7 +112,7 @@ pub mod datastore {
         Ok(id)
     }
 
-    pub fn insert_into_world_memory(world_id: i32, type_id: i32, memory: &str, date: &str) -> Result<i32> {
+    pub fn save_world_memory(world_id: i32, type_id: i32, memory: &str, date: &str) -> Result<i32> {
       let conn = get_db_conn()?;
       let query = format!("INSERT INTO world_memory (world_id, type_id, memory, date) VALUES ({}, {}, '{}', {})", world_id, type_id, memory, date);
       conn.execute(
@@ -125,7 +125,7 @@ pub mod datastore {
       Ok(id)
     }
 
-    pub fn insert_into_place_memory(place_id: i32, type_id: i32, memory: &str, date: &str) -> Result<i32> {
+    pub fn save_place_memory(place_id: i32, type_id: i32, memory: &str, date: &str) -> Result<i32> {
       let conn = get_db_conn()?;
       let query = format!("INSERT INTO place_memory (npc_id, type_id, memory, date) VALUES ({}, {}, '{}', {})", place_id, type_id, memory, date);
       conn.execute(
@@ -138,7 +138,7 @@ pub mod datastore {
       Ok(id)
     }
 
-    pub fn insert_into_npc_memory(npc_id: i32, type_id: i32, memory: &str, date: &str) -> Result<i32> {
+    pub fn save_npc_memory(npc_id: i32, type_id: i32, memory: &str, date: &str) -> Result<i32> {
         let conn = get_db_conn()?;
         let query = format!("INSERT INTO npc_memory (npc_id, type_id, memory, date) VALUES ({}, {}, '{}', {})", npc_id, type_id, memory, date);
         conn.execute(
@@ -156,20 +156,20 @@ pub mod datastore {
         pub id: i32,
         pub name: String,
         pub summary: String,
-        pub detail: String,
+        pub description: String,
         pub date: String,
     }
 
     pub fn get_world_by_id(id: i32) -> Result<Option<World>> {
         let conn = get_db_conn()?;
-        let mut stmt = conn.prepare("SELECT id, name, summary,detail, date FROM world WHERE id = ?1")?;
+        let mut stmt = conn.prepare("SELECT id, name, summary,description, date FROM world WHERE id = ?1")?;
         let mut rows = stmt.query(&[&id])?;
         if let Some(row) = rows.next()? {
             let world = World {
                 id: row.get(0)?,
                 name: row.get(1)?,
                 summary: row.get(2)?,
-                detail: row.get(3)?,
+                description: row.get(3)?,
                 date: row.get(4)?,
             };
             Ok(Some(world))
