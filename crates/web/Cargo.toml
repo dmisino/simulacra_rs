@@ -1,0 +1,16 @@
+[package]
+name = "web"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+bytes = "1.4.0"
+futures = "0.3.28"
+futures-channel = "0.3.28"
+futures-util = "0.3.28"
+mpsc = "0.1.0"
+serde = "1.0.160"
+tokio = { version = "1.28.0", features = ["full"] }
+tokio-stream = "0.1.14"
+warp = { version = "0.3.4", features = ["tls"] }
+
