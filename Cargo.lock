@@ -128,25 +128,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "cli"
-version = "0.1.0"
-dependencies = [
- "async-trait",
- "crossterm",
- "llm",
- "log",
- "mpsc",
- "reqwest",
- "serde",
- "serde_json",
- "serde_urlencoded",
- "serde_yaml",
- "simulacra",
- "tokio",
- "url",
-]
-
-[[package]]
 name = "codespan-reporting"
 version = "0.11.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1046,10 +1027,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "prompt"
-version = "0.1.0"
-
-[[package]]
 name = "queue-ext"
 version = "0.4.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1341,6 +1318,19 @@ dependencies = [
 ]
 
 [[package]]
+name = "serde_yaml"
+version = "0.9.21"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "d9d684e3ec7de3bf5466b32bd75303ac16f0736426e5a4e0d6e489559ce1249c"
+dependencies = [
+ "indexmap",
+ "itoa",
+ "ryu",
+ "serde",
+ "unsafe-libyaml",
+]
+
+[[package]]
 name = "sha1"
 version = "0.10.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1382,7 +1372,26 @@ dependencies = [
 ]
 
 [[package]]
-name = "simulacra"
+name = "simulacra_cli"
+version = "0.1.0"
+dependencies = [
+ "async-trait",
+ "crossterm",
+ "llm",
+ "log",
+ "mpsc",
+ "reqwest",
+ "serde",
+ "serde_json",
+ "serde_urlencoded",
+ "serde_yaml 0.8.26",
+ "simulacra_lib",
+ "tokio",
+ "url",
+]
+
+[[package]]
+name = "simulacra_lib"
 version = "0.1.0"
 dependencies = [
  "async-trait",
@@ -1390,13 +1399,13 @@ dependencies = [
  "llm",
  "log",
  "memory",
- "prompt",
  "reqwest",
  "serde",
  "serde_json",
  "serde_urlencoded",
- "serde_yaml",
+ "serde_yaml 0.8.26",
  "url",
+ "workflow",
 ]
 
 [[package]]
@@ -1710,6 +1719,12 @@ name = "unicode-width"
 version = "0.1.10"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "c0edd1e5b14653f783770bce4a4dabb4a5108a5370a5f5d8cfe8710c361f6c8b"
+
+[[package]]
+name = "unsafe-libyaml"
+version = "0.2.8"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "1865806a559042e51ab5414598446a5871b561d21b6764f2eabb0dd481d880a6"
 
 [[package]]
 name = "untrusted"
@@ -2096,6 +2111,14 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "80d0f4e272c85def139476380b12f9ac60926689dd2e01d4923222f40580869d"
 dependencies = [
  "winapi",
+]
+
+[[package]]
+name = "workflow"
+version = "0.1.0"
+dependencies = [
+ "serde",
+ "serde_yaml 0.9.21",
 ]
 
 [[package]]

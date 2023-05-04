@@ -1,0 +1,29 @@
+name: simulacra initialization
+steps:
+  - name: get speaker role
+    type: prompt_file
+    file: prompt_speaker_role_writer.txt
+    results:
+      - name: speaker_role
+  - name: generate style prompt
+    type: prompt_llm
+    file: template_create_style_hint.txt
+    results:
+      - name: style_hint
+  - name: build world
+    type: prompt_llm
+    file: build_world_template.txt
+    results:
+      - name: world_name
+      - name: world_summary
+      - name: world_description
+  - name: create plot
+    type: prompt_llm
+    file: built_plot.txt
+    results:
+      - name: story_plot
+  - name: agent background
+    type: prompt_file
+    file: prompt_agent_background.txt
+    results:
+      - name: agent_background

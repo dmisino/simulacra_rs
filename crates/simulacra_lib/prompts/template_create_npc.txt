@@ -1,0 +1,12 @@
+{identity_writer}
+
+# The story you are telling takes place in this world:
+<world_name>. <world_description>
+
+# The specific location the story is currently happening in:
+<place_name>. <place_description>
+
+# Characters from the story so far:
+<npc_list_all>
+
+{create_npc}

@@ -1,0 +1,4 @@
+name: simulacra agent
+description: steps for running a simulacra npc agent
+steps:
+  - name: run code

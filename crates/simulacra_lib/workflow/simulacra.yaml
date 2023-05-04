@@ -1,0 +1,15 @@
+name: simulacra
+description: overall simulacra process to create a world, story and spawn agents acting within it
+steps:
+  - name: initialization
+    type: workflow
+    file: simulacra_initialization.yaml
+    results:
+  - name: run world agent
+    type: workflow
+    file: simulacra_agent_world.yaml
+    results:
+  - name: run npc agent
+    type: workflow
+    file: simulacra_agent_npc.yaml  
+    results:

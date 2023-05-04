@@ -1,0 +1,8 @@
+{identity_writer}
+
+{style}
+
+# The story you are telling takes place in this world:
+<world_name>. <world_description>
+
+{create_place}

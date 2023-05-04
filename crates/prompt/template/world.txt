@@ -1,4 +1,0 @@
-Generate a NAME, a brief one sentence SUMMARY, and a one paragraph DETAIL summary of a fictional world. The time period that this world might emulate should be selected randomly, such as Prehistoric, Classical, The Middle Age, Early Modern, Modern, Near Future, or Far Future. Or it can be a time and place completely unlike anything ever experienced or imagined on Earth. Be as creative as possible, but avoid the most commonly used science fiction or fantasy tropes. Use only fictional names, places and settings. Try to create something new and interesting. Include details that would be considered important for that world, which for example could be major historical events, conflicts, disasters, significant occurrences. Respond with the following:
-NAME: <fill in>
-SUMMARY: <fill in>
-DETAIL: <fill in>

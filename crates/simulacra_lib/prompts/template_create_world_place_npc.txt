@@ -1,0 +1,5 @@
+{identity_writer}
+
+# You are creating a new story. You will describe a new WORLD, PLACE and CHARACTER (NPC). For each of these you will give their NAME, 
+
+{create_world}
