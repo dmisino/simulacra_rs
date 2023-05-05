@@ -3,10 +3,12 @@
 //use simulacra::agent::{ NpcAgent };
 //use std::thread;
 use simulacra_lib::*;
+use tokio;
 
-fn main() {
+#[tokio::main]
+async fn main() {
     // Start the simulacra framework
-    simulacra_lib::start("simulacra.yaml".to_string());
+    simulacra_lib::start("main.yaml".to_string()).await;
 
 
     // // Track a list of agents to more easily manage message channels

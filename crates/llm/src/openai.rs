@@ -48,6 +48,7 @@ pub async fn get_chat_completion(prompt: String) -> String {
   let mut data: String = r#"
   {
       "model": "gpt-3.5-turbo",
+      "max_tokens": 3000,
       "messages": [
         {
           "role": "system",
@@ -61,6 +62,7 @@ pub async fn get_chat_completion(prompt: String) -> String {
     }"#.to_string();
   data = format!("{}", data.replace("{}", prompt.trim_end()));
 
+    println!("OPENAI data: {}", data);
   let url = "https://api.openai.com/v1/chat/completions".to_string();
   let auth = format!("Bearer {}", api_key);
 

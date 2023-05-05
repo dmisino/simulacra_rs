@@ -1,0 +1,34 @@
+name: simulacra initialization
+description: create world and setting details to be included in agents prompts
+steps:
+  - name: get identity for the llm assistant to assume
+    type: load
+    file: identity_writer.txt
+    results:
+      - name: identity
+  - name: get writing style prompt
+    type: load
+    file: writing_style.txt
+    results:
+      - name: writing_style
+  - name: create world
+    type: prompt
+    file: create_world.txt
+    results:
+      - name: world_name
+      - name: world_summary
+      - name: world_description
+  # - name: create place
+  #   type: prompt
+  #   file: create_place.txt
+  #   results:
+  #     - name: place_name
+  #     - name: place_summary
+  #     - name: place_description            
+  # - name: create character
+  #   type: prompt
+  #   file: create_npc.txt
+  #   results:
+  #     - name: npc_name
+  #     - name: npc_summary
+  #     - name: npc_description

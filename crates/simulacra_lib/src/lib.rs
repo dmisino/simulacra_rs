@@ -1,14 +1,12 @@
+mod workflow;
 use std::path::{Path, PathBuf};
+
 use workflow::*;
 
 // This is the main implementation of the simulacra framework. We
 // will pass a workflow file to the workflow crate and let it run.
-pub fn start(workflow_file: String) {
-    let mut file_path = PathBuf::new();
-    file_path.push(Path::new(env!("CARGO_MANIFEST_DIR")));
-    file_path.push("workflow");
-    file_path.push(workflow_file);
-    workflow::launch_workflow(&file_path.to_str().unwrap());
+pub async fn start(workflow_file: String) {
+    workflow::launch_workflow(&workflow_file).await;
     println!("Complete!");
 }
 

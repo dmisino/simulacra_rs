@@ -1,0 +1,12 @@
+{identity}
+
+{writing_style}
+
+# The setting for the story is a world called {world_name}.
+
+{world_description}
+
+# Within the world described above, give the details of a particular place within that world where part of the story will take place. Do not include any specifics about characters from the story, or any part of the story itself. Only include a detailed description of the place, and any important or noteworthy things about that place which may be important to any characters who are there or any aspect of the story. Include descriptive details that would bring the location to life for a reader. Respond with the NAME of the fictional place, a concise one sentence SUMMARY, and a one single paragraph length DESCRIPTION in the following format:
+NAME: 
+SUMMARY: 
+DESCRIPTION: 
