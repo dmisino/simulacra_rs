@@ -7,9 +7,13 @@ use tokio;
 
 #[tokio::main]
 async fn main() {
-    // Start the simulacra framework
-    simulacra_lib::start("main.yaml".to_string()).await;
+    // Parse command line arguments
+    // Options are:
+    // -run <simulation_name> # Creates and runs a new simulation instance
+    // -load <simulation_id> # Continues a saved simulation instance 
 
+    // Start the simulacra framework
+    simulacra_lib::start("random_world".to_string()).await;
 
     // // Track a list of agents to more easily manage message channels
     // let mut agent_list: Vec<(NpcAgent, Sender<String>, Receiver<String>)> = Vec::new();

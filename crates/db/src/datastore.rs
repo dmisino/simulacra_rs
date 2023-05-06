@@ -6,8 +6,19 @@ pub mod datastore {
     fn get_db_conn() -> Result<Connection> {
         let conn = Connection::open(DB_NAME)?;
         conn.execute(
+            "CREATE TABLE IF NOT EXISTS simulation (
+                    id              INTEGER PRIMARY KEY AUTOINCREMENT,
+                    name            TEXT NOT NULL,
+                    date            TEXT NOT NULL,
+                    cycles          INTEGER NOT NULL,
+                    )",
+            [],
+        )?;
+
+        conn.execute(
             "CREATE TABLE IF NOT EXISTS world (
                     id              INTEGER PRIMARY KEY AUTOINCREMENT,
+                    simulation_id   INTEGER NOT NULL REFERENCES simulation (id),
                     name            TEXT NOT NULL,
                     summary         TEXT NOT NULL,
                     description     TEXT NOT NULL,
@@ -75,11 +86,13 @@ pub mod datastore {
         Ok(conn)
     }
 
-    pub fn save_world(name: &str, summary: &str, description: &str, date: &str) -> Result<i32> {
+
+    pub fn save_simulation(name: &str) -> Result<i32> {
         let conn = get_db_conn()?;
+        let date = chrono::Local::now().format("%Y-%m-%d %H:%M:%S").to_string();
         conn.execute(
-            "INSERT INTO world (name, summary, description, date) VALUES (?1, ?2, ?3, ?4)",
-            &[name, summary, description, date],
+            "INSERT INTO simulation (name, date, cycles) VALUES (?1, ?2, 0)",
+            &[name, date],
         )?;
 
         let id = conn.last_insert_rowid() as i32;
@@ -87,7 +100,30 @@ pub mod datastore {
         Ok(id)
     }
 
-    pub fn save_place(world_id: i32, name: &str, summary: &str, description: &str, date: &str) -> Result<i32> {
+    pub fn increment_simuation_cycles(simulation_id: i32) {
+        let conn = get_db_conn()?;
+        let query = format!("UPDATE simulation SET cycles = cycles + 1 WHERE id = {}", simulation_id);
+        conn.execute(
+            &query,
+            [],
+        )?;
+    }
+
+    pub fn save_world(simulation_id: i32, name: &str, summary: &str, description: &str) -> Result<i32> {
+        let date = chrono::Local::now().format("%Y-%m-%d %H:%M:%S").to_string();
+        let conn = get_db_conn()?;
+        conn.execute(
+            "INSERT INTO world (simulation_id, name, summary, description, date) VALUES (?1, ?2, ?3, ?4)",
+            &[simulation_id, name, summary, description, date],
+        )?;
+
+        let id = conn.last_insert_rowid() as i32;
+
+        Ok(id)
+    }
+
+    pub fn save_place(world_id: i32, name: &str, summary: &str, description: &str) -> Result<i32> {
+      let date = chrono::Local::now().format("%Y-%m-%d %H:%M:%S").to_string();
       let conn = get_db_conn()?;
       conn.execute(
           "INSERT INTO place (world_id, name, summary, description, date) VALUES (?1, ?2, ?3, ?4)",
@@ -154,6 +190,7 @@ pub mod datastore {
     #[derive(Debug)]
     pub struct World {
         pub id: i32,
+        pub simulation_id: i32,
         pub name: String,
         pub summary: String,
         pub description: String,
@@ -162,15 +199,16 @@ pub mod datastore {
 
     pub fn get_world_by_id(id: i32) -> Result<Option<World>> {
         let conn = get_db_conn()?;
-        let mut stmt = conn.prepare("SELECT id, name, summary,description, date FROM world WHERE id = ?1")?;
+        let mut stmt = conn.prepare("SELECT id, simulation_id, name, summary,description, date FROM world WHERE id = ?1")?;
         let mut rows = stmt.query(&[&id])?;
         if let Some(row) = rows.next()? {
             let world = World {
                 id: row.get(0)?,
-                name: row.get(1)?,
-                summary: row.get(2)?,
-                description: row.get(3)?,
-                date: row.get(4)?,
+                simulation_id: row.get(1)?,
+                name: row.get(2)?,
+                summary: row.get(3)?,
+                description: row.get(4)?,
+                date: row.get(5)?,
             };
             Ok(Some(world))
         } else {
@@ -207,7 +245,6 @@ pub mod datastore {
         }
     }
 
-    // TODO: Update from here down for new table structure
     #[derive(Debug)]
     pub struct Memory {
         pub id: i32,
@@ -278,5 +315,32 @@ pub mod datastore {
             memories.push(memory);
         }
         Ok(memories)
+    }
+
+    #[derive(Debug)]
+    pub struct Simulation {
+        pub id: i32,
+        pub name: String,
+        pub date: String,
+        pub cycles: i32,
+    }
+
+    pub fn get_simulations() -> Result<Vec<Simulation>> {
+        let conn = get_db_conn().unwrap();
+        let mut stmt = conn.prepare("SELECT id, name, date, cycles FROM simulation ORDER BY cycles desc")?;
+    
+        let mut rows = stmt.query([])?;
+    
+        let mut simulations = Vec::new();
+        while let Some(row) = rows.next()? {
+            let simulation = Simulation {
+                id: row.get(0)?,
+                name: row.get(1)?,
+                date: row.get(2)?,
+                cycles: row.get(3)?,
+            };
+            simulations.push(simulation);
+        }
+        Ok(simulations)
     }
 }

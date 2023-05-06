@@ -1,13 +1,13 @@
-mod workflow;
+mod simulation;
 use std::path::{Path, PathBuf};
 
-use workflow::*;
+use simulation::*;
 
 // This is the main implementation of the simulacra framework. We
-// will pass a workflow file to the workflow crate and let it run.
-pub async fn start(workflow_file: String) {
-    workflow::launch_workflow(&workflow_file).await;
-    println!("Complete!");
+// will pass a simulation file to the simulation crate and let it run.
+pub async fn start(simulation_file: String) {
+    simulation::launch_simulation(&simulation_file).await;
+    println!("Simulation complete");
 }
 
 // // Implement a pause duration between calls to the OpenAI API to prevent error 429 - Too many calls

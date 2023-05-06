@@ -51,27 +51,22 @@ pub async fn get_chat_completion(prompt: String) -> String {
       "max_tokens": 3000,
       "messages": [
         {
-          "role": "system",
-          "content": "You are an award winning writer who is helping as an assistant to write a new adventure story."
-        },
-        {
           "role": "user",
           "content": "{}"
         }
       ]
     }"#.to_string();
-  data = format!("{}", data.replace("{}", prompt.trim_end()));
-
+    data = format!("{}", data.replace("{}", &prompt.replace("\r\n","\\n")));
     println!("OPENAI data: {}", data);
-  let url = "https://api.openai.com/v1/chat/completions".to_string();
-  let auth = format!("Bearer {}", api_key);
+    let url = "https://api.openai.com/v1/chat/completions".to_string();
+    let auth = format!("Bearer {}", api_key);
 
-  let client = reqwest::Client::new();
-  let response = client
-      .post(url)
-      .header(CONTENT_TYPE, "application/json")
-      .header(AUTHORIZATION, auth)
-      .body(data).send().await.unwrap();
+    let client = reqwest::Client::new();
+    let response = client
+        .post(url)
+        .header(CONTENT_TYPE, "application/json")
+        .header(AUTHORIZATION, auth)
+        .body(data).send().await.unwrap();
 
     let chat_response = match response.status() {
       reqwest::StatusCode::OK => {
@@ -85,6 +80,7 @@ pub async fn get_chat_completion(prompt: String) -> String {
       reqwest::StatusCode::BAD_REQUEST => "Error: Status 400 - Bad request".to_owned(),
       status => format!("Error: Unexpected HTTP status code from OpenAI API: {}", status.as_u16()),
   };
+  println!("OPENAI response: {}", chat_response);
   chat_response
 }
 

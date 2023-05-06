@@ -1,3 +1,0 @@
-Choose at random an author or genre with a distinctive style from the past 200 years until the present. It should be an author or genre used in sci-fi, horror, fantasy, psycological, crime, adventure or some other fiction novels. Include a very broad range of possibilities from both well-known and lesser-known authors from which you can choose at random. Respond with the NAME of the author or genre, and a one single concise DESCRIPTION paragraph starting with "All of your writing is in the style of" and then continue by naming the author or genre, followed by no more than 2 sentences with important details describing how to write in that style. Response by filling in the following.
-NAME: 
-DESCRIPTION:  

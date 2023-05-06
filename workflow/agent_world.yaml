@@ -1,7 +1,0 @@
-name: simulacra world agent
-description: steps for running the simulacra world agent
-steps:
-  - name: run an agent
-    type: agent
-    file: 
-    results:  
