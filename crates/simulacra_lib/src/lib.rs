@@ -5,9 +5,9 @@ use simulation::*;
 
 // This is the main implementation of the simulacra framework. We
 // will pass a simulation file to the simulation crate and let it run.
-pub async fn start(simulation_file: String) {
-    simulation::launch_simulation(&simulation_file).await;
-    println!("Simulation complete");
+pub async fn start(simulation_file: String) -> i32 {
+    let simulation_id = simulation::launch_simulation(&simulation_file).await;
+    simulation_id
 }
 
 // // Implement a pause duration between calls to the OpenAI API to prevent error 429 - Too many calls

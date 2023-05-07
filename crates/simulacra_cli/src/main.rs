@@ -1,19 +1,90 @@
 //use std::sync::mpsc::{Sender, Receiver};
-//use std::time::Duration;
+use std::thread::sleep;
+use std::time::Duration;
 //use simulacra::agent::{ NpcAgent };
 //use std::thread;
 use simulacra_lib::*;
 use tokio;
+use std::io::{self, Write};
+
+use crossterm::{
+    event::{self, Event, KeyCode, KeyEvent},
+    terminal::{disable_raw_mode, enable_raw_mode},
+};
+
 
 #[tokio::main]
 async fn main() {
-    // Parse command line arguments
-    // Options are:
-    // -run <simulation_name> # Creates and runs a new simulation instance
-    // -load <simulation_id> # Continues a saved simulation instance 
+    println!("Welcome to simulacra! Use 'help' for available commands");
+    loop {
+        print!("Command: ");
+        io::stdout().flush().expect("Failed to flush stdout");
 
-    // Start the simulacra framework
-    simulacra_lib::start("random_world".to_string()).await;
+        let mut input = String::new();
+        io::stdin().read_line(&mut input).expect("Failed to read line");
+        let parts: Vec<&str> = input.trim().split_whitespace().collect();
+
+        match parts.as_slice() {
+            ["new"] => {
+                println!("Generating new simulation...");
+                let simulation_id = simulacra_lib::start("random_world".to_string()).await;
+                println!("New simulation created with id {}", simulation_id);
+            }
+            ["list"] => {
+                println!("Not yet implemented");
+            }
+            ["detail", id] => {
+                println!("Not yet implemented");
+            }
+            ["run", id] => {
+                println!("Running simulation with id {}. Press any key to stop.", id);
+                loop {
+                    println!("--agent activity--");
+                    io::stdout().flush().expect("Failed to flush stdout");
+
+                    sleep(Duration::from_secs(2));
+
+                    if event::poll(Duration::from_millis(10)).unwrap() {
+                        if let Event::Key(KeyEvent { code: KeyCode::Char(_), .. }) = event::read().unwrap() {
+                            break;
+                        }
+                    }
+                }
+            }   
+            ["talk", id] => {
+                println!("Not yet implemented");
+            }                                 
+            ["help"] => {
+                println!("If you are running this for the first time, run 'new' to generate a new simulation, then 'run' with the simulation id you just created.\n");
+                println!("The following commands are available:");
+                println!("new           Generate a new simulation, world, and agent");
+                println!("list          List already created simulations");
+                println!("detail <id>   Show full details of a simulation");
+                println!("run <id>      Run a simulation by id");
+                println!("talk <id>     Converse with the npc agent in a simulation");
+                println!("help          Display help");
+                println!("exit          Exit program");
+            }
+            ["exit"] | ["quit"] => {
+                println!("Exiting...");
+                break;
+            }
+            _ => println!("Invalid command"),
+        }
+    }
+}
+
+fn kbhit() -> bool {
+    use std::io::Read;
+
+    let mut buffer = [0; 1];
+
+    if let Ok(_) = io::stdin().read_exact(&mut buffer) {
+        true
+    } else {
+        false
+    }
+}
 
     // // Track a list of agents to more easily manage message channels
     // let mut agent_list: Vec<(NpcAgent, Sender<String>, Receiver<String>)> = Vec::new();
@@ -58,5 +129,3 @@ async fn main() {
 
     //     thread::sleep(Duration::from_secs(1));
     // }
-
-}

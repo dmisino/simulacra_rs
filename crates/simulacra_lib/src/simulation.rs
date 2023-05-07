@@ -1,5 +1,5 @@
-mod db;
-use db.*;
+extern crate db;
+use db::datastore::*;
 use std::fs;
 use serde::{Deserialize};
 use std::collections::HashMap;
@@ -9,11 +9,11 @@ use std::path::PathBuf;
 use std::env;
 use llm::openai::get_chat_completion;
 use async_recursion::async_recursion;
+use std::fmt;
 
 #[derive(Debug, Deserialize)]
 struct Step {
     name: String,
-    #[serde(rename = "type")]
     step_type: String,
     file: Option<String>,
     results: Option<Vec<ResultValue>>,
@@ -24,6 +24,12 @@ struct ResultValue {
     name: String,
 }
 
+impl fmt::Display for ResultValue {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "{}", self.name)
+    }
+}
+
 #[derive(Debug, Deserialize)]
 struct Simulation {
     name: String,
@@ -32,34 +38,32 @@ struct Simulation {
 }
 
 #[async_recursion]
-pub async fn launch_simulation(simulation_name: &str) {
-    let simulation_yaml = &get_file("simulation", format!("{}.yaml", simulation_name));
+pub async fn launch_simulation(simulation_name: &str) -> i32 {
+    let simulation_yaml = &get_file("simulation", &format!("{}.yaml", simulation_name));
     let simulation: Simulation = serde_yaml::from_str(simulation_yaml).unwrap();
-    let mut value_map: HashMap<&String, String> = HashMap::new();
+    let mut value_map: HashMap<String, String> = HashMap::new();
+    let mut new_simulation_id = 0;
 
     // Loop over the steps and execute. Steps can have output 
     // results, which are added to a hash map for use in later
-    // steps. Step types:
-    // - load: load a text file and add it to the value map, often
-    //      used to load a piece of a prompt for an llm
-    // - prompt: load a text file, replace any tags that match 
-    //      existing values in the hash map, then prompt an llm 
-    //      and add the result(s) to the hash map.
-    // - agent: tbd 
-    for step in &simulation.steps {
+    // steps.
+    for step in simulation.steps {
         match step.step_type.as_str() {
             "load" => {
-                let mut file_contents = get_file(format!("simulation/{}", simulation_name), &step.file);
+                let mut file_contents = get_file(&format!("simulation_files\\{}", simulation_name), &step.file.as_ref().unwrap());
                 // Replace any tags in the file
                 for (key, value) in value_map.iter() {
                     let tag = format!("{{{}}}", key);
                     file_contents = file_contents.replace(tag.as_str(), value);
                 }
                 // A "load" step only has one result, so add it to the value map
-                value_map.insert(&step.results[0].name, file_contents);
+                if let Some(results) = step.results {
+                    let result = results[0].to_string();
+                    value_map.insert(result, file_contents);
+                }
             },
             "prompt" => {
-                let mut file_contents = get_file(format!("simulation/{}", simulation_name), &step.file);
+                let mut file_contents = get_file(&format!("simulation_files\\{}", simulation_name), &step.file.unwrap());
                 // Replace any tags in the file
                 for (key, value) in value_map.iter() {
                     let tag = format!("{{{}}}", key);
@@ -73,52 +77,77 @@ pub async fn launch_simulation(simulation_name: &str) {
 
                 // Parse results and add to value map
                 let mut index = 0;
-                for result in &step.results {
-                    // For each completion line, remove everything up to the first :
-                    let mut result_value = completion_lines[index].to_string();
-                    let mut parts: Vec<&str> = result_value.split(":").collect();
-                    result_value = parts[1].trim().to_string();
-                    // Add result to value map
-                    value_map.insert(&result.name, result_value);
-                    index = index + 1;
+                if let Some(results) = step.results {
+                    for result in results.iter() {
+                        // For each completion line, remove everything up to the first :
+                        let mut line = completion_lines[index];
+                        let mut parts: Vec<&str> = line.split(":").collect();
+                        let result_value = parts[1].trim();
+                        value_map.insert(result.to_string(), result_value.to_string());
+                        index = index + 1;
+                    }
                 }
             },
             "save_simulation" => {
                 // Save simulation to database
-                let simulation_id = save_simulation(&simulation.name).await;
-                value_map.insert("siulation_id", simulation_id);
+                let simulation_id = save_simulation(&simulation.name);
+                //value_map.insert("simulation_id".to_string(), simulation_id.unwrap().to_string());
+                //println!("New simulation created with id: {}", simulation_id.unwrap().to_string());
+                if let Ok(id) = &simulation_id {
+                    value_map.insert("simulation_id".to_string(), id.to_string());
+                    new_simulation_id = id.to_string().parse::<i32>().unwrap();
+                    //println!("New simulation created with id: {}", id.to_string());
+                }
             },
             "save_world" => {
                 // Save world to database
-                let Some(world_name) = value_map.get("world_name");
-                let Some(world_summary) = value_map.get("world_summary");
-                let Some(world_description) = value_map.get("world_description");
-                let Some(simulation_id) = value_map.get("simulation_id");
-                let world_id = save_world(simulation_id, world_name, world_summary, world_description).await;
-                value_map.insert("world_id", world_id);
+                let world_name = value_map.get("world_name").unwrap_or(&String::new()).to_string();
+                let world_summary = value_map.get("world_summary").unwrap_or(&String::new()).to_string();
+                let world_description = value_map.get("world_description").unwrap_or(&String::new()).to_string();
+                let simulation_id = value_map.get("simulation_id").unwrap_or(&String::new()).to_string();
+                let world_id = save_world(simulation_id.parse::<i32>().unwrap(), world_name, world_summary, world_description);
+                value_map.insert("world_id".to_string(), world_id.unwrap().to_string());
+            },
+            "save_place" => {
+                // Save place to database
+                let place_name = value_map.get("place_name").unwrap_or(&String::new()).to_string();
+                let place_summary = value_map.get("place_summary").unwrap_or(&String::new()).to_string();
+                let place_description = value_map.get("place_description").unwrap_or(&String::new()).to_string();
+                let world_id = value_map.get("world_id").unwrap_or(&String::new()).to_string();
+                let place_id = save_place(world_id.parse::<i32>().unwrap(), place_name, place_summary, place_description);
+                value_map.insert("place_id".to_string(), place_id.unwrap().to_string());
+            },
+            "save_npc" => {
+                // Save npc to database
+                let npc_name = value_map.get("npc_name").unwrap_or(&String::new()).to_string();
+                let npc_summary = value_map.get("npc_summary").unwrap_or(&String::new()).to_string();
+                let npc_description = value_map.get("npc_description").unwrap_or(&String::new()).to_string();
+                let world_id = value_map.get("world_id").unwrap_or(&String::new()).to_string();
+                let npc_id = save_npc(world_id.parse::<i32>().unwrap(), npc_name, npc_summary, npc_description);
+                value_map.insert("npc_id".to_string(), npc_id.unwrap().to_string());
             },
             "agent" => {
-                println!("Agent step");
+                //println!("Agent step");
             },      
             _ => {
                 println!("Unknown step type: {}", step.step_type);
             }
         }
     }
-    if !value_map.is_empty() {
-        // Print contents of value map
-        println!("Results contained in value map: ");
-        for (key, value) in value_map.iter() {
-            println!("{}: {}", key, value);
-        }
-    }
+    new_simulation_id
+    // if !value_map.is_empty() {
+    //     // Print contents of value map
+    //     println!("Results contained in value map: ");
+    //     for (key, value) in value_map.iter() {
+    //         println!("{}: {}", key, value);
+    //     }
+    // }
 }
 
 pub fn get_file(folder: &str, file: &str) -> String {
     let current_dir = env::current_dir().expect("Failed to get current directory");
     let file_dir = current_dir.join(folder);
     let file_path = file_dir.join(file);
-    println!("get_file, file_path: {:?}", file_path);
     let result = fs::read_to_string(file_path).expect("Unable to read file");
     result
 }

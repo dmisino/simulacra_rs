@@ -2,6 +2,8 @@ use reqwest;
 use reqwest::header::{AUTHORIZATION, CONTENT_TYPE};
 use serde::{Deserialize, Serialize};
 use std::env;
+use std::thread::sleep;
+use std::time::Duration;
 
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
@@ -42,9 +44,7 @@ pub struct Message {
 }
 
 pub async fn get_chat_completion(prompt: String) -> String {
-
   let api_key = env::var("OPENAI_API_KEY").expect("OPENAI_API_KEY must be set");
-
   let mut data: String = r#"
   {
       "model": "gpt-3.5-turbo",
@@ -57,7 +57,6 @@ pub async fn get_chat_completion(prompt: String) -> String {
       ]
     }"#.to_string();
     data = format!("{}", data.replace("{}", &prompt.replace("\r\n","\\n")));
-    println!("OPENAI data: {}", data);
     let url = "https://api.openai.com/v1/chat/completions".to_string();
     let auth = format!("Bearer {}", api_key);
 
@@ -80,7 +79,8 @@ pub async fn get_chat_completion(prompt: String) -> String {
       reqwest::StatusCode::BAD_REQUEST => "Error: Status 400 - Bad request".to_owned(),
       status => format!("Error: Unexpected HTTP status code from OpenAI API: {}", status.as_u16()),
   };
-  println!("OPENAI response: {}", chat_response);
+  // Short pause to make sure we aren't calling the API again too quickly
+  std::thread::sleep(std::time::Duration::from_millis(500));
   chat_response
 }
 
