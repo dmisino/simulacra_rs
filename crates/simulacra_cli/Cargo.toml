@@ -15,6 +15,7 @@ async-trait = "0.1.66"
 log = "0.4.17"
 simulacra_lib = { path = "../simulacra_lib" }
 llm = { path = "../llm" }
+db = { path = "../db" }
 crossterm = "0.26.1"
 mpsc = "0.1.0"
 

@@ -1,0 +1,8 @@
+{identity}
+
+{writing_style}
+
+# Name and describe a fictional world setting. Choose at random a technology level for the setting from a very broad range of possibilities such as Prehistoric, Classical, The Middle Age, Early Modern, Modern, Near Future, Far Future, or something completely unlike any time period in human history. Describe a fictional world based on the time period selected. Do not describe the story in the world description, only describe the world, and some of the most interesting and noteworthy things about it that will be important to the story you are writing. Describe one more races of intelligent creatures that inhabit that world. Include only the name and description of the world setting and facts about it. Do not include a description of the story or any specific characters in the story. Respond with the NAME of the fictional world or setting, a concise one sentence SUMMARY, and a one single paragraph length DESCRIPTION in the following format:
+NAME: 
+SUMMARY: 
+DESCRIPTION: 

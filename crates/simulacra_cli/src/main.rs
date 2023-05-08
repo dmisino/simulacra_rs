@@ -6,6 +6,7 @@ use std::time::Duration;
 use simulacra_lib::*;
 use tokio;
 use std::io::{self, Write};
+use db::datastore::get_simulation_list;
 
 use crossterm::{
     event::{self, Event, KeyCode, KeyEvent},
@@ -27,11 +28,31 @@ async fn main() {
         match parts.as_slice() {
             ["new"] => {
                 println!("Generating new simulation...");
-                let simulation_id = simulacra_lib::start("random_world".to_string()).await;
+                let simulation_id = simulacra_lib::start("fantasy_world".to_string()).await;
                 println!("New simulation created with id {}", simulation_id);
             }
             ["list"] => {
-                println!("Not yet implemented");
+                match get_simulation_list() {
+                    Ok(simulations) => {
+                        for simulation_summary in simulations.iter() {
+                            println!(
+                                "Simulation ID: {}\nWorld Name: {}\nWorld Summary: {}\nPlace Name: {}\nPlace Summary: {}\nNPC Name: {}\nNPC Summary: {}\nDate created: {}\nSimulation cycles run: {}\n",
+                                simulation_summary.id,
+                                simulation_summary.world_name,
+                                simulation_summary.world_summary,
+                                simulation_summary.place_name,
+                                simulation_summary.place_summary,
+                                simulation_summary.npc_name,
+                                simulation_summary.npc_summary,                                                                
+                                simulation_summary.date,
+                                simulation_summary.cycles,
+                            );
+                        }
+                    }
+                    Err(error) => {
+                        eprintln!("Error getting simulation list: {}", error);
+                    }
+                }                       
             }
             ["detail", id] => {
                 println!("Not yet implemented");
@@ -71,18 +92,6 @@ async fn main() {
             }
             _ => println!("Invalid command"),
         }
-    }
-}
-
-fn kbhit() -> bool {
-    use std::io::Read;
-
-    let mut buffer = [0; 1];
-
-    if let Ok(_) = io::stdin().read_exact(&mut buffer) {
-        true
-    } else {
-        false
     }
 }
 

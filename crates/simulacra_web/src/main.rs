@@ -1,7 +1,7 @@
 use warp::{Filter, Rejection, Reply};
 
 async fn hello() -> Result<impl Reply, Rejection> {
-    Ok("Hello, world!")
+    Ok("Simulacra - web ui not yet implemented")
 }
 
 #[tokio::main]

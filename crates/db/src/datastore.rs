@@ -329,3 +329,51 @@ pub fn get_simulations() -> Result<Vec<Simulation>> {
     }
     Ok(simulations)
 }
+
+#[derive(Debug)]
+pub struct SimulationSummary {
+    pub id: i32,
+    pub world_name: String,
+    pub world_summary: String,
+    pub date: String,
+    pub cycles: i32,
+    pub place_name: String,
+    pub place_summary: String,
+    pub npc_name: String,
+    pub npc_summary: String,        
+}
+
+pub fn get_simulation_list() -> Result<Vec<SimulationSummary>> {
+    let conn = get_db_conn().unwrap();
+
+    let mut stmt = conn.prepare(
+        "SELECT s.id [simulation_id], w.name [world_name], w.summary [world_summary], s.date, s.cycles, 
+        p.name [place_name], p.summary [place_summary], n.name [npc_name], n.summary [npc_summary]
+        FROM simulation as s
+        JOIN world as w on s.id = w.simulation_id
+        JOIN place as p on p.world_id = w.id
+        JOIN npc as n on n.world_id = w.id
+        ORDER BY s.date desc",
+    )?;
+
+    let simulation_iter = stmt.query_map([], |row| {
+        Ok(SimulationSummary {
+            id: row.get(0)?,
+            world_name: row.get(1)?,
+            world_summary: row.get(2)?,
+            date: row.get(3)?,
+            cycles: row.get(4)?,
+            place_name: row.get(5)?,
+            place_summary: row.get(6)?,
+            npc_name: row.get(7)?,
+            npc_summary: row.get(8)?,
+        })
+    })?;
+
+    let mut simulations = Vec::new();
+    for simulation in simulation_iter {
+        simulations.push(simulation?);
+    }
+
+    Ok(simulations)
+}

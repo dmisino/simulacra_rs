@@ -1,4 +1,4 @@
-name: random world
+name: fantasy_world
 description: create a random fantasy world and an agent acting within it
 steps:
   - name: save simulation instance
