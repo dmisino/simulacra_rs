@@ -1,4 +1,6 @@
 use rusqlite::{Result, Connection, Row, params};
+use rusqlite::Error as RusqliteError;
+use anyhow::{anyhow, Result as AnyhowResult};
 
 pub static DB_NAME: &str = "simulacra.db";
     
@@ -345,7 +347,6 @@ pub struct SimulationSummary {
 
 pub fn get_simulation_list() -> Result<Vec<SimulationSummary>> {
     let conn = get_db_conn().unwrap();
-
     let mut stmt = conn.prepare(
         "SELECT s.id [simulation_id], w.name [world_name], w.summary [world_summary], s.date, s.cycles, 
         p.name [place_name], p.summary [place_summary], n.name [npc_name], n.summary [npc_summary]
@@ -376,4 +377,64 @@ pub fn get_simulation_list() -> Result<Vec<SimulationSummary>> {
     }
 
     Ok(simulations)
+}
+
+#[derive(Debug)]
+pub struct SimulationDetail {
+    pub id: i32,
+    pub date: String,
+    pub cycles: i32,
+    pub world_name: String,
+    pub world_summary: String,
+    pub world_description: String,
+    pub place_name: String,
+    pub place_summary: String,
+    pub place_description: String,    
+    pub npc_name: String,
+    pub npc_summary: String,
+    pub npc_description: String,
+    // TODO: Add memories, recent occurances        
+}
+
+pub fn get_simulation_detail(simulation_id: i32) -> Result<SimulationDetail, rusqlite::Error> {
+    let conn = get_db_conn()?;
+
+    let mut stmt = conn.prepare("
+        SELECT s.id [simulation_id], s.date, s.cycles, 
+        w.name [world_name], w.summary [world_summary], w.description [world_description],
+        p.name [place_name], p.summary [place_summary], p.description [place_description],
+        n.name [npc_name], n.summary [npc_summary], n.description [npc_description]
+        FROM simulation as s
+        JOIN world as w on s.id = w.simulation_id
+        JOIN place as p on p.world_id = w.id
+        JOIN npc as n on n.world_id = w.id
+        WHERE s.id = ?
+        ORDER BY s.cycles desc
+        LIMIT 1
+    ")?;
+
+    let simulation_detail: Option<Result<SimulationDetail, rusqlite::Error>> = stmt.query_and_then(params![simulation_id], |row| {
+        Ok(SimulationDetail {
+            id: row.get(0)?,
+            date: row.get(1)?,
+            cycles: row.get(2)?,
+            world_name: row.get(3)?,
+            world_summary: row.get(4)?,
+            world_description: row.get(5)?,
+            place_name: row.get(6)?,
+            place_summary: row.get(7)?,
+            place_description: row.get(8)?,
+            npc_name: row.get(9)?,
+            npc_summary: row.get(10)?,
+            npc_description: row.get(11)?,
+        })
+    })?.next();
+
+    match simulation_detail {
+        Some(detail) => Ok(detail.unwrap()),
+        None => Err(RusqliteError::SqliteFailure(
+            rusqlite::ffi::Error::new(1000),
+            Some(format!("Simulation detail not found for id {}", simulation_id))
+        ))
+    }    
 }

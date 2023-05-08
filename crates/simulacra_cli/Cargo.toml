@@ -18,4 +18,4 @@ llm = { path = "../llm" }
 db = { path = "../db" }
 crossterm = "0.26.1"
 mpsc = "0.1.0"
-
+anyhow = "1.0"

@@ -6,7 +6,8 @@ use std::time::Duration;
 use simulacra_lib::*;
 use tokio;
 use std::io::{self, Write};
-use db::datastore::get_simulation_list;
+use db::datastore::{get_simulation_list, get_simulation_detail};
+
 
 use crossterm::{
     event::{self, Event, KeyCode, KeyEvent},
@@ -36,16 +37,16 @@ async fn main() {
                     Ok(simulations) => {
                         for simulation_summary in simulations.iter() {
                             println!(
-                                "Simulation ID: {}\nWorld Name: {}\nWorld Summary: {}\nPlace Name: {}\nPlace Summary: {}\nNPC Name: {}\nNPC Summary: {}\nDate created: {}\nSimulation cycles run: {}\n",
+                                "Simulation ID: {}\nDate created: {}\nSimulation cycles run: {}\nWorld Name: {}\nWorld Summary: {}\nPlace Name: {}\nPlace Summary: {}\nNPC Name: {}\nNPC Summary: {}\n\n",
                                 simulation_summary.id,
+                                simulation_summary.date,
+                                simulation_summary.cycles,                                
                                 simulation_summary.world_name,
                                 simulation_summary.world_summary,
                                 simulation_summary.place_name,
                                 simulation_summary.place_summary,
                                 simulation_summary.npc_name,
-                                simulation_summary.npc_summary,                                                                
-                                simulation_summary.date,
-                                simulation_summary.cycles,
+                                simulation_summary.npc_summary,
                             );
                         }
                     }
@@ -55,7 +56,23 @@ async fn main() {
                 }                       
             }
             ["detail", id] => {
-                println!("Not yet implemented");
+                let simulation_id: i32 = id.parse().expect("Failed to parse");
+                let simulation_detail = get_simulation_detail(simulation_id).unwrap();
+                println!(
+                    "Simulation ID: {}\nDate created: {}\nSimulation cycles run: {}\n\nWorld Name: {}\nWorld Summary: {}\nWorld Detail: {}\n\nPlace Name: {}\nPlace Summary: {}\nPlace Detail: {}\n\nNPC Name: {}\nNPC Summary: {}\nNPC Detail: {}\n\n",
+                    simulation_detail.id,
+                    simulation_detail.date,
+                    simulation_detail.cycles,                    
+                    simulation_detail.world_name,
+                    simulation_detail.world_summary,
+                    simulation_detail.world_description,
+                    simulation_detail.place_name,
+                    simulation_detail.place_summary,
+                    simulation_detail.place_description,
+                    simulation_detail.npc_name,
+                    simulation_detail.npc_summary,
+                    simulation_detail.npc_description,
+                );
             }
             ["run", id] => {
                 println!("Running simulation with id {}. Press any key to stop.", id);
