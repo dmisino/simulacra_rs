@@ -30,7 +30,7 @@ async fn main() {
             ["new"] => {
                 println!("Generating new simulation...");
                 let simulation_id = simulacra_lib::start("fantasy_world".to_string()).await;
-                println!("New simulation created with id {}", simulation_id);
+                show_simulation_detail(simulation_id);
             }
             ["list"] => {
                 match get_simulation_list() {
@@ -57,22 +57,7 @@ async fn main() {
             }
             ["detail", id] => {
                 let simulation_id: i32 = id.parse().expect("Failed to parse");
-                let simulation_detail = get_simulation_detail(simulation_id).unwrap();
-                println!(
-                    "Simulation ID: {}\nDate created: {}\nSimulation cycles run: {}\n\nWorld Name: {}\nWorld Summary: {}\nWorld Detail: {}\n\nPlace Name: {}\nPlace Summary: {}\nPlace Detail: {}\n\nNPC Name: {}\nNPC Summary: {}\nNPC Detail: {}\n\n",
-                    simulation_detail.id,
-                    simulation_detail.date,
-                    simulation_detail.cycles,                    
-                    simulation_detail.world_name,
-                    simulation_detail.world_summary,
-                    simulation_detail.world_description,
-                    simulation_detail.place_name,
-                    simulation_detail.place_summary,
-                    simulation_detail.place_description,
-                    simulation_detail.npc_name,
-                    simulation_detail.npc_summary,
-                    simulation_detail.npc_description,
-                );
+                show_simulation_detail(simulation_id);
             }
             ["run", id] => {
                 println!("Running simulation with id {}. Press any key to stop.", id);
@@ -93,7 +78,10 @@ async fn main() {
                 println!("Not yet implemented");
             }                                 
             ["help"] => {
-                println!("If you are running this for the first time, run 'new' to generate a new simulation, then 'run' with the simulation id you just created.\n");
+                println!("If you are running this for the first time, run these commands:");
+                println!("1. 'new' to generate a new simulation");
+                println!("2. 'run <id>' to run and watch the simulation");
+                println!("");
                 println!("The following commands are available:");
                 println!("new           Generate a new simulation, world, and agent");
                 println!("list          List already created simulations");
@@ -112,6 +100,24 @@ async fn main() {
     }
 }
 
+fn show_simulation_detail(simulation_id: i32) {
+    let simulation_detail = get_simulation_detail(simulation_id).unwrap();
+    println!(
+        "Simulation ID: {}\nDate created: {}\nSimulation cycles run: {}\n\nWorld Name: {}\nWorld Summary: {}\nWorld Detail: {}\n\nPlace Name: {}\nPlace Summary: {}\nPlace Detail: {}\n\nNPC Name: {}\nNPC Summary: {}\nNPC Detail: {}\n",
+        simulation_detail.id,
+        simulation_detail.date,
+        simulation_detail.cycles,                    
+        simulation_detail.world_name,
+        simulation_detail.world_summary,
+        simulation_detail.world_description,
+        simulation_detail.place_name,
+        simulation_detail.place_summary,
+        simulation_detail.place_description,
+        simulation_detail.npc_name,
+        simulation_detail.npc_summary,
+        simulation_detail.npc_description,
+    );
+}
     // // Track a list of agents to more easily manage message channels
     // let mut agent_list: Vec<(NpcAgent, Sender<String>, Receiver<String>)> = Vec::new();
     

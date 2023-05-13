@@ -10,7 +10,7 @@
 
 {place_description}
 
-# Within the current location, describe a character from the story. This character is doing something important to the story in the place described above. Describe the character, but not what they are doing. Describe details about who they are, a bit about their past, and visual details to paint a vivd picture for the reader. Respond with the NAME of the character, a concise one sentence SUMMARY, and a one single paragraph length DESCRIPTION in the following format:
+# Describe a character from the story. Describe details about the character, but do not describe what they are currently doing. Describe details about who they are, a bit about their past and their personality, and visual details to paint a vivd picture for the reader. Respond with the NAME of the character, a concise one sentence SUMMARY, and a one single paragraph length DESCRIPTION in the following format:
 NAME: 
 SUMMARY: 
 DESCRIPTION: 

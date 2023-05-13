@@ -135,13 +135,6 @@ pub async fn launch_simulation(simulation_name: &str) -> i32 {
         }
     }
     new_simulation_id
-    // if !value_map.is_empty() {
-    //     // Print contents of value map
-    //     println!("Results contained in value map: ");
-    //     for (key, value) in value_map.iter() {
-    //         println!("{}: {}", key, value);
-    //     }
-    // }
 }
 
 pub fn get_file(folder: &str, file: &str) -> String {
