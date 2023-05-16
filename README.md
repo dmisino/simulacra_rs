@@ -1,7 +1,7 @@
 # simulacra_rs
 simulacra is a framework for creating and testing agents simulating intelligent, interactive behavior using large language models.
 
-Note: I'm pausing on this Rust version for the moment while I iterate in Python, (here)[https://github.com/dmisino/simulacra]. I have too much experimentation to do which is taking too long in Rust. Once I have figured everything out in Python, I'll return here and create a Rust version.
+**Note**: I'm pausing on this Rust version for the moment while I iterate in Python, [here](https://github.com/dmisino/simulacra). I have too much experimentation to do which is taking too long in Rust. Once I have figured everything out in Python, I'll return here and create a Rust version.
 
 Large Language models (LLMs) act as stateless natural language computation engines, where their world view is generated in an instant based on their training data and the context that is provided in each prompt. The key to harnessing their power for creating systems that provide immersive experiences useful for all types of interactive media is in creating the supporting frameworks that structure prompts to provide everything necessary for the model to understand and successfully synthesise an appropriate output that gives the allusion of intelligence and continuity of thought. 
 
